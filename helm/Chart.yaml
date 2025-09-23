@@ -1,0 +1,13 @@
+apiVersion: v2
+name: diy-vpn
+description: A Helm chart for setting up a diy vpn with Twingate Exit Networks
+type: application
+version: 0.0.1
+appVersion: latest
+home: https://twingate.com
+sources:
+  - https://github.com/Twingate/kubernetes-operator
+dependencies:
+  - name: twingate-operator
+    version: "0.26.3"
+    repository: "oci://ghcr.io/twingate/helmcharts"
