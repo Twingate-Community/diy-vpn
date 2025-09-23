@@ -1,0 +1,54 @@
+# Terraform files
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/terraform.tfvars
+**/.terraformrc
+**/terraform.rc
+**/crash.log
+**/.terraform.tfstate.lock.info
+**/override.tf
+**/override.tf.json
+**/*_override.tf
+**/*_override.tf.json
+
+# Helm files
+**/charts/*.tgz
+helm/charts/
+**/Chart.lock
+**/requirements.lock
+**/charts/
+**/values.yaml
+
+# Generated config files
+**/config/
+**/config/*.yaml
+**/config/*.yml
+
+# Kubernetes files
+**/kubeconfig
+**/kubeconfig-*
+/tmp/kubeconfig-*
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+**/logs/
+
+# Temporary files
+**/tmp/
+**/.tmp/
