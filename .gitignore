@@ -19,6 +19,7 @@ helm/charts/
 **/Chart.lock
 **/requirements.lock
 **/charts/
+**/values.yaml
 
 # Generated config files
 **/config/
