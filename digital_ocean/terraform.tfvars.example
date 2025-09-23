@@ -17,8 +17,8 @@ clusters = {
   }
   "ams-vpn-cluster" = {
     region     = "ams3"
-    node_size  = "s-2vcpu-4gb"
-    node_count = 2
+    node_size  = "s-1vcpu-2gb"
+    node_count = 1
   }
   "fra-vpn-cluster" = {
     region     = "fra1"
