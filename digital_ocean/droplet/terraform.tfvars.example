@@ -1,0 +1,45 @@
+do_token     = "your_digitalocean_api_token_here"
+tg_api_token = "your_twingate_api_token_here"
+tg_network   = "your_twingate_network_name"
+
+# Define droplets across different regions
+# Each droplet configuration supports multiple instances per region
+droplets = {
+  "toronto-vpn" = {
+    region = "tor1"
+    size   = "s-1vcpu-1gb"
+    count  = 1
+    image  = "ubuntu-24-04-x64"
+  }
+  "newyork-vpn" = {
+    region = "nyc1" 
+    size   = "s-1vcpu-1gb"
+    count  = 1
+    image  = "ubuntu-24-04-x64"
+  }
+  "amsterdam-vpn" = {
+    region = "ams3"
+    size   = "s-1vcpu-1gb"
+    count  = 2  # Multiple droplets in this region
+    image  = "ubuntu-24-04-x64"
+  }
+  "frankfurt-vpn" = {
+    region = "fra1"
+    size   = "s-1vcpu-1gb"
+    count  = 1
+    image  = "ubuntu-24-04-x64"
+  }
+  "singapore-vpn" = {
+    region = "sgp1"
+    size   = "s-1vcpu-1gb"
+    count  = 1
+    image  = "ubuntu-24-04-x64"
+  }
+}
+
+# Optional: SSH keys for droplet access (for debugging/maintenance)
+# Leave empty array for maximum security (no SSH access)
+ssh_key_names = []  # ["your-ssh-key-name"]
+
+# Optional: Environment label
+environment = "production"
