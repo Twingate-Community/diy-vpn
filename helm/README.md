@@ -1,168 +1,216 @@
 # DIY VPN Helm Chart
 
-A Helm chart for deploying Twingate VPN connectors to create exit networks in Kubernetes clusters. This chart simplifies the deployment of Twingate's zero-trust networking solution for creating VPN exit points.
+A production-ready Helm chart for deploying Twingate to create Exit Networks in any Kubernetes cluster.
 
-## Overview
+## 🏗️ Overview
 
-This Helm chart deploys the Twingate Kubernetes operator and creates a TwingateConnector resource that establishes an exit network connection. It's designed for creating VPN exit nodes that allow traffic to egress through specific geographic regions or network locations.
+This Helm chart is designed as a standalone, reusable component that can be deployed to any Kubernetes cluster to create Twingate Exit Network. It leverages the official Twingate Kubernetes operator to manage connector lifecycle and provides enterprise-ready defaults.
 
-## Prerequisites
+```text
+┌─────────────────────────────────┐
+│       Kubernetes Cluster        │
+│                                 │
+│ ┌─────────────────────────────┐ │
+│ │      twingate namespace     │ │
+│ │                             │ │
+│ │  ┌─────────────────────┐    │ │
+│ │  │ Twingate Operator   │    │ │
+│ │  │ (from OCI registry) │    │ │
+│ │  └─────────────────────┘    │ │
+│ │              │              │ │
+│ │              ▼              │ │
+│ │  ┌─────────────────────┐    │ │
+│ │  │ TwingateConnector   │    │ │
+│ │  │        (CRD)        │    │ │
+│ │  └─────────────────────┘    │ │
+│ │              │              │ │
+│ │              ▼              │ │
+│ │  ┌─────────────────────┐    │ │
+│ │  │  Connector Pod(s)   │    │ │
+│ │  │   (auto-managed)    │    │ │
+│ │  └─────────────────────┘    │ │
+│ └─────────────────────────────┘ │
+└─────────────────────────────────┘
+```
 
-- Kubernetes cluster (v1.19+)
-- Helm 3.0+
-- Twingate account with API access
-- `kubectl` configured to access your cluster
+## ✨ Key Features
 
-## Installation
+✅ **Universal Compatibility**: Works with any Kubernetes cluster (cloud or on-premises)
+✅ **Official Integration**: Uses Twingate's official Kubernetes operator
+✅ **Zero Configuration**: Sensible defaults with minimal required configuration
+✅ **Highly Configurable**: Extensive customization options via Helm values
+✅ **GitOps Friendly**: Declarative configuration suitable for CI/CD pipelines
+✅ **Multi-Tenancy**: Support for namespace restrictions and RBAC
 
-### 1. Add Dependencies
+## 📋 Prerequisites
 
-First, update the chart dependencies to download the Twingate operator:
+### Required Components
+
+- **Kubernetes**: v1.19+ (tested up to v1.28)
+- **Helm**: v3.8+
+- **Network Access**: Cluster must reach Twingate cloud services (*.twingate.com)
+
+### Required Credentials
+
+- **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
+- **Twingate Network**: Your tenant name (e.g., `company.twingate.com` → `company`)
+- **Twingate API Key**: Generated from Admin Console → Settings → API
+- **Remote Network ID**: Created in Twingate Admin Console (or use existing)
+
+## 🚀 Quick Start
+
+### 1. Download and Configure
 
 ```bash
+git clone https://github.com/Twingate-Community/diy-vpn.git
+cd diy-vpn/helm
+```
+
+### 2. Update Dependencies
+
+```bash
+# Download the Twingate operator chart
 helm dependency update
 ```
 
-### 2. Configure Values
+### 3. Configure Values
 
-Create a `values.yaml` by copying `values.example.yaml` and fill in your Twingate configuration:
+Create your `values.yaml` from the example:
+
+```bash
+cp values.example.yaml values.yaml
+```
+
+Edit `values.yaml` with your Twingate configuration:
 
 ```yaml
 twingate-operator:
   twingateOperator:
-    network: "your-tenant-name"           # Your Twingate tenant name
-    apiKey: "your-twingate-api-key"       # Twingate API key
-    remoteNetworkId: "your-network-id"    # Exit Network ID
-    logFormat: "json"
-    logVerbosity: "debug"
+    network: "your-company"                          # https://{network}.twingate.com
+    apiKey: "your_twingate_api_key_here"             # https://{network}.twingate.com/settings/api
+    remoteNetworkId: ""                              # https://{network}.twingate.com/exit-networks/{remoteNetworkId}
+    logFormat: "json"                                 # Optional: json or text
+    logVerbosity: "info"                             # Optional: debug, info, warn, error
 ```
 
-### 3. Deploy the Chart
+### 4. Deploy
 
 ```bash
-# Install in the default namespace
-helm install diy-vpn . -f values-custom.yaml
+# Install to current cluster
+helm install diy-vpn . \
+  --namespace twingate \
+  --create-namespace \
+  --values values.yaml
 
-# Or install in a specific namespace
-helm install diy-vpn . -f values-custom.yaml --namespace twingate --create-namespace
+# Or specify custom release name and namespace
+helm install my-vpn-exit . \
+  --namespace my-vpn \
+  --create-namespace \
+  --values values.yaml
 ```
 
-## Configuration
-
-### Required Values
-
-| Parameter | Description | Required |
-|-----------|-------------|----------|
-| `twingate-operator.twingateOperator.network` | Your Twingate tenant name | ✅ |
-| `twingate-operator.twingateOperator.apiKey` | Twingate API token | ✅ |
-| `twingate-operator.twingateOperator.remoteNetworkId` | Existing Exit Network ID | ✅ |
-
-### Optional Values
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `twingate-operator.twingateOperator.logFormat` | Log format (json/text) | `"json"` |
-| `twingate-operator.twingateOperator.logVerbosity` | Log verbosity level | `"debug"` |
-
-### Security Configuration
-
-The chart includes secure defaults:
-
-```yaml
-twingate-operator:
-  podSecurityContext:
-    seccompProfile:
-      type: RuntimeDefault
-
-  securityContext:
-    capabilities:
-      drop: ["ALL"]
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    allowPrivilegeEscalation: false
-    runAsUser: 1000
-```
-
-### TwingateConnector Configuration
-
-The chart creates a TwingateConnector resource with automatic image updates:
-
-```yaml
-apiVersion: twingate.com/v1beta
-kind: TwingateConnector
-metadata:
-  name: vpn-node
-spec:
-  imagePolicy:
-    provider: dockerhub
-    schedule: "0 0 * * *"  # Daily updates at midnight
-```
-
-## Verification
-
-After installation, verify the deployment:
+### 5. Verify Deployment
 
 ```bash
-# Check operator deployment
-kubectl get deployments -l app.kubernetes.io/name=twingate-operator
+# Check deployment status
+helm status diy-vpn -n twingate
 
-# Check connector status
-kubectl get twingateconnectors
+# Verify operator is running
+kubectl get pods -n twingate
+
+# Check connector resource
+kubectl get twingateconnectors -n twingate
 
 # View operator logs
-kubectl logs -l app.kubernetes.io/name=twingate-operator -f
+kubectl logs -l app.kubernetes.io/name=twingate-operator -n twingate
 ```
 
-## Upgrading
+## 🔧 Configuration Reference
 
-To upgrade the chart:
+### Required Configuration
+
+| Parameter | Description | Example | Notes |
+|-----------|-------------|---------|-------|
+| `network` | Twingate tenant name | `"mycompany"` | From `mycompany.twingate.com` |
+| `apiKey` | Twingate API token | `"wUsHFayeWt..."` | From Admin Console → Settings → API |
+| `remoteNetworkId` | Exit network ID | `"UmVtb3RlT..."` | Select an Exit Network and copy the ID from the URL |
+
+### Optional Configuration
+
+| Parameter | Description | Default | Options |
+|-----------|-------------|---------|---------|
+| `logFormat` | Log output format | `"json"` | `"json"`, `"text"` |
+| `logVerbosity` | Logging level | `"info"` | `"debug"`, `"info"`, `"warn"`, `"error"` |
+| `namespaces` | Operator scope | `[]` (all) | Array of namespace patterns |
+
+## 📦 Lifecycle Management
+
+### Installation
 
 ```bash
-# Update dependencies
+# Standard installation
+helm install diy-vpn . -f values.yaml -n twingate --create-namespace
+
+# Installation with custom release name
+helm install my-vpn-exit . -f values.yaml -n my-namespace --create-namespace
+
+# Dry run to test configuration
+helm install diy-vpn . -f values.yaml -n twingate --dry-run --debug
+```
+
+### Upgrades
+
+```bash
+# Update dependencies first
 helm dependency update
 
-# Upgrade the release
-helm upgrade diy-vpn . -f values-custom.yaml
+# Upgrade existing release
+helm upgrade diy-vpn . -f values.yaml -n twingate
+
+# Upgrade with new values
+helm upgrade diy-vpn . -f values-new.yaml -n twingate
+
+# Rollback if needed
+helm rollback diy-vpn 1 -n twingate
 ```
 
-## Uninstalling
-
-To remove the chart:
+### Uninstallation
 
 ```bash
-helm uninstall diy-vpn
+# Remove Helm release
+helm uninstall diy-vpn -n twingate
+
+# Clean up remaining resources (if needed)
+kubectl delete twingateconnectors --all -n twingate
+kubectl delete namespace twingate
 ```
 
-**Note**: This will remove the operator but TwingateConnector resources may need manual cleanup.
+## 🔍 Troubleshooting
 
-## Troubleshooting
+### Common Issues & Solutions
 
-### Common Issues
+| Issue | Symptoms | Solution |
+|-------|----------|----------|
+| **Operator CrashLoopBackOff** | Pod keeps restarting | Check API credentials, network connectivity |
+| **Connector Not Created** | No TwingateConnector resource | Check operator logs, verify RBAC permissions |
+| **Connector Offline** | Shows offline in Twingate Console | Check remote network ID, API token permissions |
+| **High Resource Usage** | Pod using excessive CPU/memory | Adjust resource limits, check for memory leaks |
+| **Image Pull Errors** | Can't pull operator image | Check network connectivity, image registry access |
 
-1. **Operator not starting**
+### Getting Help
 
-   ```bash
-   kubectl describe deployment -l app.kubernetes.io/name=twingate-operator
-   kubectl logs -l app.kubernetes.io/name=twingate-operator
-   ```
+**Documentation Resources:**
 
-2. **Connector not connecting**
+- 📖 [Twingate Kubernetes Operator Docs](https://github.com/Twingate/kubernetes-operator)
+- ⚙️ [Helm Documentation](https://helm.sh/docs/)
+- ☸️ [Kubernetes Troubleshooting](https://kubernetes.io/docs/tasks/debug-application-cluster/)
 
-   ```bash
-   kubectl describe twingateconnector vpn-node
-   kubectl get events --sort-by=.metadata.creationTimestamp
-   ```
+**Community Support:**
 
-3. **API authentication issues**
-   - Verify your Twingate API token has the correct permissions
-   - Check that the network name matches your Twingate tenant
+- 💬 [Twingate Community Forum](https://reddit.com/r/twingate)
+- 🐛 [Report Chart Issues](https://github.com/Twingate-Community/diy-vpn/issues)
+- 📧 [Twingate Support](https://www.twingate.com/support)
 
-### Getting Support
+---
 
-- [Twingate Documentation](https://docs.twingate.com/)
-- [Kubernetes Operator GitHub](https://github.com/Twingate/kubernetes-operator)
-- [Twingate Community](https://community.twingate.com/)
-
-## License
-
-This chart is part of the DIY VPN project and follows the same license terms.
+🎉 **Success!** You now have a production-ready, reusable Helm chart for deploying Twingate Exit Networks to any Kubernetes cluster.
