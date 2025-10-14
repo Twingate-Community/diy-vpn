@@ -38,7 +38,6 @@ Deploy cost-effective, globally distributed Twingate VPN connectors across multi
 
 ## ✨ Key Features
 
-✅ **Most Cost-Effective**: Starting at $6/month per region vs $12+ for Kubernetes  
 ✅ **Official Integration**: Uses Twingate's recommended APT package installation  
 ✅ **Zero-Trust Security**: No SSH, no inbound ports - access only via Twingate  
 ✅ **Automatic Updates**: Built-in security updates for system and Twingate packages  
@@ -196,11 +195,11 @@ Each droplet entry in the `droplets` map supports these parameters:
 
 ### Droplet Sizes & Pricing
 
-| Size | vCPUs | Memory | Storage | Transfer | Price/Month | Recommended For |
-|------|-------|--------|---------|----------|-------------|-----------------|
-| `s-1vcpu-1gb` | 1 | 1GB | 25GB SSD | 1TB | $6 | **Recommended**: Most VPN traffic |
-| `s-1vcpu-2gb` | 1 | 2GB | 50GB SSD | 2TB | $12 | High traffic or multiple users |
-| `s-2vcpu-2gb` | 2 | 2GB | 60GB SSD | 3TB | $18 | Very high traffic |
+| Size | vCPUs | Memory | Storage | Transfer | Recommended For |
+|------|-------|--------|---------|----------|-----------------|
+| `s-1vcpu-1gb` | 1 | 1GB | 25GB SSD | 1TB | **Recommended**: Most VPN traffic |
+| `s-1vcpu-2gb` | 1 | 2GB | 50GB SSD | 2TB | High traffic or multiple users |
+| `s-2vcpu-2gb` | 2 | 2GB | 60GB SSD | 3TB | Very high traffic |
 
 > **💡 Cost Tip**: Start with `s-1vcpu-1gb` - it handles most VPN workloads efficiently.
 
@@ -344,25 +343,6 @@ droplets = {
 ```
 
 > **⚠️ Note**: Changing droplet size requires recreation (brief downtime)
-
-## 💰 Cost Optimization Guide
-
-### Regional Cost Analysis
-
-| Regions | Droplets | Monthly Cost | Annual Cost | Use Case |
-|---------|----------|--------------|-------------|-----------|
-| **Single** | 1x s-1vcpu-1gb | $6 | $72 | Personal/Small team |
-| **Multi-Regional** | 3x s-1vcpu-1gb | $18 | $216 | Small business |
-| **Global Coverage** | 6x s-1vcpu-1gb | $36 | $432 | Medium business |
-| **High Availability** | 10x s-1vcpu-1gb | $60 | $720 | Enterprise |
-
-### Cost Optimization Strategies
-
-1. **Start Small**: Begin with 1-2 regions closest to your users
-2. **Monitor Usage**: Use Twingate Analytics to identify high-traffic regions
-3. **Scale Gradually**: Add regions based on user distribution and performance needs
-4. **Right-Size Resources**: `s-1vcpu-1gb` handles most workloads efficiently
-5. **Regional Selection**: Choose regions strategically based on user geography
 
 ## 🔍 Troubleshooting
 
