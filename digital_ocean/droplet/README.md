@@ -1,65 +1,124 @@
 # Multi-Region Twingate VPN on DigitalOcean Droplets
 
-This Terraform configuration deploys Twingate VPN connectors across multiple DigitalOcean droplets in different regions using the official Twingate installation method. This provides a cost-effective, globally distributed VPN solution.
+Deploy cost-effective, globally distributed Twingate VPN connectors across multiple DigitalOcean droplets using the official Twingate installation method. This provides the most economical way to create exit networks with enterprise-grade security.
 
-## Architecture
+## 🏗️ Architecture
 
-- **Multi-region deployment**: Deploy droplets across multiple DigitalOcean regions
-- **Per-region exit networks**: Each region gets its own Twingate exit network (`do_{region}`)
-- **Official Twingate installation**: Uses the official APT package and systemd service
-- **Automated deployment**: Cloud-init handles complete connector setup
-- **Security-first**: Locked-down firewall with minimal attack surface
-- **Scalable**: Easy to add/remove regions and scale droplets per region
+```text
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   NYC1 Region   │    │   AMS3 Region   │    │   SGP1 Region   │
+│                 │    │                 │    │                 │
+│ ┌─────────────┐ │    │ ┌─────────────┐ │    │ ┌─────────────┐ │
+│ │   Droplet   │ │    │ │   Droplet   │ │    │ │   Droplet   │ │
+│ │ nyc1-vpn-01 │ │    │ │ ams3-vpn-01 │ │    │ │ sgp1-vpn-01 │ │
+│ │             │ │    │ │             │ │    │ │             │ │
+│ │ Twingate    │ │    │ │ Twingate    │ │    │ │ Twingate    │ │
+│ │ Connector   │ │    │ │ Connector   │ │    │ │ Connector   │ │
+│ └─────────────┘ │    │ └─────────────┘ │    │ └─────────────┘ │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                    ┌─────────────────────┐
+                    │  Twingate Cloud     │
+                    │  do_nyc1 Network    │
+                    │  do_ams3 Network    │
+                    │  do_sgp1 Network    │
+                    └─────────────────────┘
+```
 
-## Key Features
+### Key Design Principles
 
-✅ **Cost-effective**: Uses small droplets (s-1vcpu-1gb) instead of Kubernetes overhead  
-✅ **Official installation**: Uses Twingate's recommended APT package method  
-✅ **Automatic updates**: Built-in security updates for system and Twingate packages  
-✅ **High availability**: Multiple droplets per region support  
-✅ **Zero-trust security**: No inbound ports open - all access via Twingate  
-✅ **Production ready**: Systemd service management with proper restart policies  
+- **Per-Region Exit Networks**: Each region gets its own Twingate remote network (`do_{region}`)
+- **Zero-Trust Security**: Completely locked-down firewall with NO inbound ports
+- **Official Installation**: Uses Twingate's recommended APT package and systemd service
+- **Cloud-Init Automation**: Complete connector setup without manual intervention
+- **Cost Optimization**: Uses minimal droplet sizes (s-1vcpu-1gb) for maximum efficiency
+- **High Availability**: Support for multiple droplets per region
 
-## Prerequisites
+## ✨ Key Features
+
+✅ **Most Cost-Effective**: Starting at $6/month per region vs $12+ for Kubernetes  
+✅ **Official Integration**: Uses Twingate's recommended APT package installation  
+✅ **Zero-Trust Security**: No SSH, no inbound ports - access only via Twingate  
+✅ **Automatic Updates**: Built-in security updates for system and Twingate packages  
+✅ **Production Ready**: Systemd service management with restart policies and logging  
+✅ **Multi-Region Support**: Deploy across any DigitalOcean region  
+✅ **Scalable**: Easy to add/remove regions and scale droplets per region  
+✅ **Infrastructure as Code**: Complete Terraform automation with proper state management  
+
+## 📋 Prerequisites
+
+### Required Tools
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
-- DigitalOcean API token
-- Twingate API token
-- Twingate Admin access to create connectors and networks
+- DigitalOcean account with API access
+- **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
+- Twingate account with Admin privileges
 
-## Quick Start
+### Required Credentials
 
-### 1. Configure Variables
+- **DigitalOcean API Token**: Generate from [DigitalOcean Control Panel](https://cloud.digitalocean.com/account/api/tokens)
+- **Twingate API Token**: Generate from Twingate Admin Console → Settings → API
+- **Twingate Network Name**: Your tenant name (e.g., `company.twingate.com` → `company`)
 
-Copy the example variables file and customize it:
+### Optional (for debugging)
+
+- SSH key configured in DigitalOcean (not recommended for production)
+
+## 🚀 Quick Start
+
+### 1. Clone and Configure
 
 ```bash
+# Clone the repository
+git clone https://github.com/Twingate-Community/diy-vpn.git
+cd diy-vpn/digital_ocean/droplet
+
+# Copy the example configuration
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edit `terraform.tfvars` with your API tokens and desired droplet configuration:
+### 2. Edit Configuration
+
+Edit `terraform.tfvars` with your credentials and desired droplet configuration:
 
 ```hcl
-do_token     = "dop_v1_your_digitalocean_token"
-tg_api_token = "your_twingate_api_token"
-tg_network   = "your_twingate_network"
+# Required: API credentials
+do_token     = "dop_v1_your_digitalocean_api_token_here"
+tg_api_token = "your_twingate_api_token_here"
+tg_network   = "your_twingate_network_name"
 
+# Configure droplets across regions
 droplets = {
   "toronto-vpn" = {
     region = "tor1"
-    size   = "s-1vcpu-1gb" 
-    count  = 1
-  }
-  "newyork-vpn" = {
-    region = "nyc1"
     size   = "s-1vcpu-1gb"
     count  = 1
+    image  = "ubuntu-24-04-x64"
   }
-  # Add more regions as needed
+  "newyork-vpn" = {
+    region = "nyc1" 
+    size   = "s-1vcpu-1gb"
+    count  = 1
+    image  = "ubuntu-24-04-x64"
+  }
+  "amsterdam-vpn" = {
+    region = "ams3"
+    size   = "s-1vcpu-1gb"
+    count  = 2  # Multiple droplets for HA
+    image  = "ubuntu-24-04-x64"
+  }
 }
+
+# Optional: SSH keys for emergency console access only
+ssh_key_names = []  # Leave empty for maximum security
+
+# Environment label
+environment = "production"
 ```
 
-### 2. Deploy Infrastructure
+### 3. Deploy Infrastructure
 
 ```bash
 # Initialize Terraform
@@ -68,186 +127,441 @@ terraform init
 # Review the deployment plan
 terraform plan
 
-# Deploy the infrastructure
+# Deploy the infrastructure (takes 3-5 minutes)
 terraform apply
 ```
 
-### 3. Verify Deployment
+### 4. Verify Deployment
 
-After deployment, check the Twingate Admin Console to verify:
+**Check Terraform Outputs:**
 
-- Remote Networks created for each region (named `do_{region}`)
-- Connectors online and connected to their respective networks
-- Connectors properly labeled with region and deployment info
+```bash
+terraform output
+```
 
-## Configuration Options
+**Verify in Twingate Admin Console:**
 
-### Droplet Configuration
+1. **Remote Networks**: Should see networks like `do_tor1`, `do_nyc1`, `do_ams3`
+2. **Connectors**: Should show online connectors for each droplet
+3. **Labels**: Connectors properly labeled with region, deployment method, and environment
 
-Each droplet configuration supports:
+**Expected Output Example:**
 
-```hcl
-"droplet-name" = {
-  region = "tor1"                    # DigitalOcean region
-  size   = "s-1vcpu-1gb"            # Droplet size
-  count  = 1                        # Number of droplets in region
-  image  = "ubuntu-24-04-x64"       # Operating system image
+```text
+deployment_summary = {
+  "connectors" = 4
+  "environment" = "production"
+  "remote_networks" = 3
+  "total_droplets" = 4
+  "twingate_network" = "yourcompany"
+  "unique_regions" = 3
 }
 ```
 
-### Available Regions
+## Complete Shutdown
 
-Supported DigitalOcean regions:
+To completely shutdown the VPN infrastructure, run `terraform destroy`.
 
-- `nyc1`, `nyc2`, `nyc3` - New York
-- `ams2`, `ams3` - Amsterdam  
-- `sfo1`, `sfo2`, `sfo3` - San Francisco
-- `sgp1` - Singapore
-- `lon1` - London
-- `fra1` - Frankfurt
-- `tor1` - Toronto
-- `blr1` - Bangalore
-- `syd1` - Sydney
+## 🔧 Configuration Reference
+
+### Droplet Configuration Options
+
+Each droplet entry in the `droplets` map supports these parameters:
+
+```hcl
+"droplet-name" = {
+  region = "tor1"                    # Required: DigitalOcean region
+  size   = "s-1vcpu-1gb"            # Optional: Droplet size (default: s-1vcpu-1gb)
+  count  = 1                        # Optional: Number of droplets (default: 1)
+  image  = "ubuntu-24-04-x64"       # Optional: OS image (default: ubuntu-24-04-x64)
+}
+```
+
+### Supported DigitalOcean Regions
+
+| Region | Location | Code | Typical Use Case |
+|--------|----------|------|------------------|
+| **North America** | | | |
+| New York | USA East | `nyc1`, `nyc2`, `nyc3` | East Coast users |
+| San Francisco | USA West | `sfo1`, `sfo2`, `sfo3` | West Coast users |
+| Toronto | Canada | `tor1` | Canadian users |
+| **Europe** | | | |
+| Amsterdam | Netherlands | `ams2`, `ams3` | European users |
+| London | UK | `lon1` | UK/Ireland users |
+| Frankfurt | Germany | `fra1` | Central Europe |
+| **Asia Pacific** | | | |
+| Singapore | Singapore | `sgp1` | Southeast Asia |
+| Bangalore | India | `blr1` | India/South Asia |
+| Sydney | Australia | `syd1` | Australia/Oceania |
+
+### Droplet Sizes & Pricing
+
+| Size | vCPUs | Memory | Storage | Transfer | Price/Month | Recommended For |
+|------|-------|--------|---------|----------|-------------|-----------------|
+| `s-1vcpu-1gb` | 1 | 1GB | 25GB SSD | 1TB | $6 | **Recommended**: Most VPN traffic |
+| `s-1vcpu-2gb` | 1 | 2GB | 50GB SSD | 2TB | $12 | High traffic or multiple users |
+| `s-2vcpu-2gb` | 2 | 2GB | 60GB SSD | 3TB | $18 | Very high traffic |
+
+> **💡 Cost Tip**: Start with `s-1vcpu-1gb` - it handles most VPN workloads efficiently.
 
 ### Security Configuration
 
-**Zero-Trust Security (Default):**
-
-- No inbound ports open (complete lockdown)
-- All outbound traffic allowed (required for Twingate connectivity)
-- All server access happens through Twingate network
-- Automatic security updates enabled
-
-**SSH Keys (Optional - for emergency console access via DigitalOcean dashboard):**
+**Zero-Trust Security (Default - Recommended):**
 
 ```hcl
-ssh_key_names = ["your-ssh-key-name"]  # Only for DigitalOcean console access
+# Maximum security - no direct access
+ssh_key_names = []                 # No SSH keys
+environment   = "production"       # Production security settings
 ```
 
-*Note: SSH keys don't open network ports - they're only for emergency console access via DigitalOcean's web interface.*
+**Emergency Access (Optional - for debugging only):**
 
-## Resource Naming
+```hcl
+# Emergency console access via DigitalOcean dashboard only
+ssh_key_names = ["your-key-name"]  # SSH key for console access
+environment   = "development"       # Development settings
+```
 
-- **Droplets**:
-  - Single droplet per region: `{region}-vpn` (e.g., `tor1-vpn`, `fra1-vpn`)
-  - Multiple droplets per region: `{region}-vpn-{number}` (e.g., `ams3-vpn-01`, `ams3-vpn-02`)
-- **Remote Networks**: `do_{region}` (e.g., `do_tor1`, `do_ams3`)  
-- **Connectors**: Same as droplet names
-- **Firewall**: `twingate-vpn-firewall` (shared across all droplets)
+> **⚠️ Security Note**: SSH keys only provide console access via DigitalOcean's web interface. Network SSH is completely blocked.
 
-## Monitoring & Maintenance
+## 📋 Resource Management
 
-### Service Status
+### Naming Conventions
+
+| Resource Type | Naming Pattern | Examples |
+|--------------|----------------|----------|
+| **Single Droplet** | `{region}-vpn` | `tor1-vpn`, `fra1-vpn` |
+| **Multiple Droplets** | `{region}-vpn-{nn}` | `ams3-vpn-01`, `ams3-vpn-02` |
+| **Remote Networks** | `do_{region}` | `do_tor1`, `do_ams3` |
+| **Connectors** | Same as droplet | `tor1-vpn`, `ams3-vpn-01` |
+| **Firewall** | `twingate-vpn-firewall` | Shared across all droplets |
+
+### Tags Applied to All Resources
+
+- `twingate-vpn` - Identifies VPN infrastructure
+- `region-{region}` - Regional grouping
+- `env-{environment}` - Environment designation
+
+## 🔧 Operations & Maintenance
+
+### Health Monitoring
+
+**Via Terraform Outputs:**
+
+```bash
+# Check deployment status
+terraform output deployment_summary
+
+# Get droplet information
+terraform output droplets
+
+# View remote networks
+terraform output twingate_remote_networks
+```
+
+**Via Twingate Admin Console:**
+
+1. Navigate to "Networks" → Check connector status (should be green/online)
+2. Navigate to "Analytics" → Monitor connector traffic and health
+3. Check connector labels for deployment metadata
+
+**Via DigitalOcean Console (if needed):**
+
+1. Droplets → View droplet status and resource usage
+2. Networking → Firewall rules verification
+3. Console access for emergency debugging
+
+### Service Management
 
 Access droplets via Twingate network or DigitalOcean console:
 
 ```bash
+# Check connector service status
 systemctl status twingate-connector
-journalctl -u twingate-connector -f  # View logs
+
+# View real-time logs
+journalctl -u twingate-connector -f
+
+# Restart connector if needed
+sudo systemctl restart twingate-connector
+
+# Check system health
+htop                    # Resource usage
+df -h                   # Disk space
+free -h                 # Memory usage
 ```
 
-### Automatic Updates
+### Automatic Maintenance
 
-- System packages: Handled by `unattended-upgrades`
-- Twingate packages: Included in automatic updates
-- Restart policy: Service auto-restarts on failure
+**System Updates:**
+
+- **Security updates**: Applied automatically via `unattended-upgrades`
+- **Twingate updates**: Official APT repository ensures latest version
+- **Reboot handling**: Automatic reboot if required by kernel updates
+
+**Service Management:**
+
+- **Auto-restart**: Service automatically restarts on failure
+- **Logging**: Structured logs via systemd journal
+- **Resource limits**: Proper ulimits and systemd limits applied
 
 ### Scaling Operations
 
-**Add a new region:**
+**Adding a New Region:**
 
 ```hcl
 droplets = {
-  # ... existing droplets
-  "london-vpn" = {
-    region = "lon1"
+  # ... existing droplets ...
+  "singapore-vpn" = {
+    region = "sgp1"
+    size   = "s-1vcpu-1gb"
+    count  = 1
+    image  = "ubuntu-24-04-x64"
+  }
+}
+```
+
+**Scaling Existing Region (High Availability):**
+
+```hcl
+"amsterdam-vpn" = {
+  region = "ams3"
+  size   = "s-1vcpu-1gb"
+  count  = 3  # Increased from 1 for HA
+  image  = "ubuntu-24-04-x64"
+}
+```
+
+**Upgrading Droplet Size:**
+
+```hcl
+"toronto-vpn" = {
+  region = "tor1"
+  size   = "s-1vcpu-2gb"  # Upgraded from s-1vcpu-1gb
+  count  = 1
+  image  = "ubuntu-24-04-x64"
+}
+```
+
+> **⚠️ Note**: Changing droplet size requires recreation (brief downtime)
+
+## 💰 Cost Optimization Guide
+
+### Regional Cost Analysis
+
+| Regions | Droplets | Monthly Cost | Annual Cost | Use Case |
+|---------|----------|--------------|-------------|-----------|
+| **Single** | 1x s-1vcpu-1gb | $6 | $72 | Personal/Small team |
+| **Multi-Regional** | 3x s-1vcpu-1gb | $18 | $216 | Small business |
+| **Global Coverage** | 6x s-1vcpu-1gb | $36 | $432 | Medium business |
+| **High Availability** | 10x s-1vcpu-1gb | $60 | $720 | Enterprise |
+
+### Cost Optimization Strategies
+
+1. **Start Small**: Begin with 1-2 regions closest to your users
+2. **Monitor Usage**: Use Twingate Analytics to identify high-traffic regions
+3. **Scale Gradually**: Add regions based on user distribution and performance needs
+4. **Right-Size Resources**: `s-1vcpu-1gb` handles most workloads efficiently
+5. **Regional Selection**: Choose regions strategically based on user geography
+
+## 🔍 Troubleshooting
+
+### Common Issues & Solutions
+
+| Issue | Symptoms | Solution |
+|-------|----------|----------|
+| **Connector Offline** | Connector shows offline in Twingate Console | Check cloud-init logs, verify tokens, restart service |
+| **Droplet Creation Fails** | Terraform apply fails during droplet creation | Check API token permissions, region availability, quotas |
+| **Invalid API Tokens** | Authentication errors in logs | Verify tokens in respective admin consoles, check expiry |
+| **High Resource Usage** | Droplet performance issues | Monitor with `htop`, consider upgrading droplet size |
+| **Network Connectivity Issues** | Slow or failed connections | Check regional latency, consider adding more regions |
+
+### Diagnostic Commands
+
+**Via Twingate Network or DigitalOcean Console:**
+
+```bash
+# Check cloud-init completion and logs
+sudo tail -f /var/log/cloud-init-output.log
+
+# Monitor Twingate connector service
+sudo systemctl status twingate-connector
+sudo journalctl -u twingate-connector -f --since "1 hour ago"
+
+# System health checks
+htop                          # CPU and memory usage
+df -h                         # Disk usage
+free -h                       # Memory details
+ss -tuln                      # Network connections (should be minimal)
+dmesg | tail -20             # Recent kernel messages
+
+# Check Twingate configuration
+sudo cat /etc/twingate/connector.conf  # Configuration file
+```
+
+**Via Terraform:**
+
+```bash
+# Check deployment status
+terraform output deployment_summary
+terraform output droplets
+
+# Validate configuration
+terraform validate
+terraform plan
+
+# Refresh state and check for drift
+terraform refresh
+```
+
+### Performance Tuning
+
+**For High Traffic Scenarios:**
+
+1. **Upgrade Droplet Size**:
+
+   ```hcl
+   size = "s-1vcpu-2gb"  # or "s-2vcpu-2gb"
+   ```
+
+2. **Add Multiple Droplets per Region**:
+
+   ```hcl
+   count = 2  # or more for load distribution
+   ```
+
+3. **Monitor with Twingate Analytics**: Check connector load and distribute users
+
+### Emergency Procedures
+
+**If Connector Goes Offline:**
+
+1. Check Twingate Admin Console for connector status
+2. Access via DigitalOcean console (if SSH keys configured)
+3. Restart connector service: `sudo systemctl restart twingate-connector`
+4. If persistent, recreate droplet: `terraform taint digitalocean_droplet.twingate_connectors["droplet-name"]`
+
+**Complete Recovery:**
+
+```bash
+# Destroy and recreate specific droplet
+terraform destroy -target="digitalocean_droplet.twingate_connectors[\"tor1-vpn\"]"
+terraform apply
+
+# Or recreate everything
+terraform destroy
+terraform apply
+```
+
+## 🧹 Cleanup & Decommissioning
+
+### Selective Cleanup
+
+**Remove specific region:**
+
+```hcl
+# Comment out or remove from terraform.tfvars
+droplets = {
+  # "toronto-vpn" = {  # Commented out
+  #   region = "tor1"
+  #   size   = "s-1vcpu-1gb"
+  #   count  = 1
+  # }
+  "newyork-vpn" = {
+    region = "nyc1"
     size   = "s-1vcpu-1gb"
     count  = 1
   }
 }
 ```
 
-**Scale existing region:**
+Then run:
 
-```hcl
-"toronto-vpn" = {
-  region = "tor1"
-  size   = "s-1vcpu-1gb"
-  count  = 3  # Increased from 1
+```bash
+terraform apply  # Will destroy the removed resources
+```
+
+### Complete Cleanup
+
+```bash
+# Destroy all resources
+terraform destroy
+
+# Confirm all resources removed
+terraform show
+```
+
+**Resources Removed:**
+
+- ✅ DigitalOcean droplets
+- ✅ DigitalOcean firewall rules
+- ✅ Twingate remote networks
+- ✅ Twingate connectors
+- ✅ Twingate connector tokens
+
+## 🔒 Security Best Practices
+
+### Production Security Checklist
+
+- [ ] **No SSH Keys**: Use `ssh_key_names = []` for maximum security
+- [ ] **Token Rotation**: Regularly rotate Twingate API tokens
+- [ ] **State File Security**: Secure Terraform state file (contains sensitive tokens)
+- [ ] **Network Monitoring**: Monitor Twingate Analytics for unusual activity
+- [ ] **Update Management**: Verify automatic updates are working
+- [ ] **Backup Strategy**: Document recovery procedures
+
+### Advanced Security Configuration
+
+**State File Encryption:**
+
+```bash
+# Use remote state with encryption
+terraform {
+  backend "s3" {
+    bucket  = "your-terraform-state"
+    key     = "twingate-vpn/terraform.tfstate"
+    region  = "us-east-1"
+    encrypt = true
+  }
 }
 ```
 
-## Cost Optimization
-
-- **Droplet size**: `s-1vcpu-1gb` sufficient for most VPN traffic (~$6/month)
-- **Regional placement**: Choose regions close to your users
-- **Scaling**: Start with 1 droplet per region, scale based on usage
-
-## Troubleshooting
-
-### Common Issues
-
-**1. Connector not appearing online:**
-
-- Check droplet status: `terraform output droplets`
-- Verify cloud-init completed via DigitalOcean console or Twingate access
-- Check connector service via console: `systemctl status twingate-connector`
-
-**2. Invalid tokens:**
-
-- Verify Twingate API token has correct permissions
-- Check token expiry in Twingate Admin Console
-
-**3. Droplet creation fails:**
-
-- Verify DigitalOcean API token permissions  
-- Check region availability and quotas
-- Ensure SSH key exists if specified
-
-### Logs and Debugging
-
-Access via Twingate network or DigitalOcean console:
+**Token Management:**
 
 ```bash
-# Cloud-init logs
-tail -f /var/log/cloud-init-output.log
-
-# Twingate connector logs  
-journalctl -u twingate-connector -f
-
-# System logs
-dmesg | tail
+# Use environment variables instead of tfvars for CI/CD
+export TF_VAR_do_token="your_do_token"
+export TF_VAR_tg_api_token="your_tg_token"
 ```
 
-## Cleanup
+## 📞 Support & Resources
 
-To destroy all resources:
+### Documentation Links
 
-```bash
-terraform destroy
-```
+- 📖 [Twingate Connector Documentation](https://docs.twingate.com/docs/connector-deployment-guides)
+- 🌊 [DigitalOcean API Documentation](https://docs.digitalocean.com/reference/api/)
+- 🏗️ [Terraform DigitalOcean Provider](https://registry.terraform.io/providers/digitalocean/digitalocean/latest/docs)
 
-This will remove:
+### Community Support
 
-- All droplets
-- Twingate connectors and tokens
-- Twingate remote networks  
-- Firewall rules
+- 💬 [Twingate Community Forum](https://community.twingate.com/)
+- 🐛 [Report Issues](https://github.com/Twingate-Community/diy-vpn/issues)
+- 📧 [Twingate Support](https://www.twingate.com/support)
 
-## Security Considerations
+### Getting Help
 
-- **Zero-trust network**: Firewall blocks ALL inbound traffic - no exceptions
-- **Twingate-only access**: All server management happens through Twingate network
-- **Token management**: Connector tokens stored securely in Terraform state
-- **Automatic updates**: Prevents vulnerabilities through automated patching
-- **Minimal attack surface**: No network services exposed, only Twingate connector
-- **Console access**: Emergency access only via DigitalOcean web console (if SSH keys configured)
-- **Monitoring**: Consider external monitoring for production deployments
+**For Infrastructure Issues:**
 
-## Support
+1. Check troubleshooting section above
+2. Review Terraform logs: `terraform apply -auto-approve -no-color 2>&1 | tee terraform.log`
+3. Post logs in GitHub issues (remove sensitive tokens)
 
-For issues related to:
+**For Twingate Issues:**
 
-- **Terraform configuration**: Check this repository's issues
-- **DigitalOcean**: Consult DigitalOcean documentation
-- **Twingate**: Contact Twingate support or check documentation
+1. Check Twingate Admin Console logs
+2. Review connector service logs
+3. Contact Twingate support with connector IDs
+
+---
+
+🎉 **Congratulations!** You now have a production-ready, cost-effective, globally distributed VPN infrastructure powered by Twingate's zero-trust networking.
