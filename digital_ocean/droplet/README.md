@@ -1,6 +1,8 @@
 # Multi-Region Twingate VPN on DigitalOcean Droplets
 
-Deploy cost-effective, globally distributed Twingate VPN connectors across multiple DigitalOcean droplets using the official Twingate installation method. This provides the most economical way to create exit networks with enterprise-grade security.
+Deploy cost-effective, globally distributed Twingate VPN Connectors across multiple DigitalOcean droplets using the official Twingate installation method. This provides the most economical way to create Exit Networks with enterprise-grade security.
+
+> **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage through Twingate infrastructure is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
 
 ## 🏗️ Architecture
 
@@ -30,20 +32,20 @@ Deploy cost-effective, globally distributed Twingate VPN connectors across multi
 ### Key Design Principles
 
 - **Per-Region Exit Networks**: Each region gets its own Twingate remote network (`do_{region}`)
-- **Zero-Trust Security**: Completely locked-down firewall with NO inbound ports
+- **Zero-Trust Security**: Completely locked-down firewall with no inbound ports
 - **Official Installation**: Uses Twingate's recommended APT package and systemd service
-- **Cloud-Init Automation**: Complete connector setup without manual intervention
-- **Cost Optimization**: Uses minimal droplet sizes (s-1vcpu-1gb) for maximum efficiency
+- **Cloud-Init Automation**: Complete Connector setup without manual intervention
+- **Cost Optimization**: Uses minimal droplet sizes (s-1vcpu-1gb) for maximum cost effectiveness
 - **High Availability**: Support for multiple droplets per region
 
 ## ✨ Key Features
 
-✅ **Official Integration**: Uses Twingate's recommended APT package installation  
-✅ **Zero-Trust Security**: No SSH, no inbound ports - access only via Twingate  
+✅ **Official Integration**: Uses Twingate's recommended APT package installation
+✅ **Zero-Trust Security**: No SSH, no inbound ports - access only via Twingate
 ✅ **Automatic Updates**: Built-in security updates for system and Twingate packages  
 ✅ **Production Ready**: Systemd service management with restart policies and logging  
-✅ **Multi-Region Support**: Deploy across any DigitalOcean region  
-✅ **Scalable**: Easy to add/remove regions and scale droplets per region  
+✅ **Multi-Region Support**: Deploy across any DigitalOcean region
+✅ **Scalable**: Easy to add/remove regions and scale droplets per region
 ✅ **Infrastructure as Code**: Complete Terraform automation with proper state management  
 
 ## 📋 Prerequisites
@@ -52,7 +54,7 @@ Deploy cost-effective, globally distributed Twingate VPN connectors across multi
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
 - DigitalOcean account with API access
-- **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
+- **Twingate Home** or other subscription plan that includes Exit Networks (not available on Starter plan)
 - Twingate account with Admin privileges
 
 ### Required Credentials
@@ -141,7 +143,7 @@ terraform output
 **Verify in Twingate Admin Console:**
 
 1. **Remote Networks**: Should see networks like `do_tor1`, `do_nyc1`, `do_ams3`
-2. **Connectors**: Should show online connectors for each droplet
+2. **Connectors**: Should show online Connectors for each droplet
 3. **Labels**: Connectors properly labeled with region, deployment method, and environment
 
 **Expected Output Example:**
@@ -169,7 +171,7 @@ Each droplet entry in the `droplets` map supports these parameters:
 
 ```hcl
 "droplet-name" = {
-  region = "tor1"                    # Required: DigitalOcean region
+  region = "tor1"                   # Required: DigitalOcean region
   size   = "s-1vcpu-1gb"            # Optional: Droplet size (default: s-1vcpu-1gb)
   count  = 1                        # Optional: Number of droplets (default: 1)
   image  = "ubuntu-24-04-x64"       # Optional: OS image (default: ubuntu-24-04-x64)
@@ -193,7 +195,7 @@ Each droplet entry in the `droplets` map supports these parameters:
 | Bangalore | India | `blr1` | India/South Asia |
 | Sydney | Australia | `syd1` | Australia/Oceania |
 
-### Droplet Sizes & Pricing
+### Droplet Sizes
 
 | Size | vCPUs | Memory | Storage | Transfer | Recommended For |
 |------|-------|--------|---------|----------|-----------------|
@@ -203,9 +205,11 @@ Each droplet entry in the `droplets` map supports these parameters:
 
 > **💡 Cost Tip**: Start with `s-1vcpu-1gb` - it handles most VPN workloads efficiently.
 
+Details current as of October 2025. Refer to [DigitalOcean](https://www.digitalocean.com/pricing) for the most current details.
+
 ### Security Configuration
 
-**Zero-Trust Security (Default - Recommended):**
+**Zero-Trust Security (Default - recommended):**
 
 ```hcl
 # Maximum security - no direct access
@@ -260,9 +264,9 @@ terraform output twingate_remote_networks
 
 **Via Twingate Admin Console:**
 
-1. Navigate to "Networks" → Check connector status (should be green/online)
-2. Navigate to "Analytics" → Monitor connector traffic and health
-3. Check connector labels for deployment metadata
+1. Navigate to "Networks" → Check Connector status (should be green/online)
+2. Navigate to "Analytics" → Monitor Connector traffic and health
+3. Check Connector labels for deployment metadata
 
 **Via DigitalOcean Console (if needed):**
 
@@ -275,13 +279,13 @@ terraform output twingate_remote_networks
 Access droplets via Twingate network or DigitalOcean console:
 
 ```bash
-# Check connector service status
+# Check Connector service status
 systemctl status twingate-connector
 
 # View real-time logs
 journalctl -u twingate-connector -f
 
-# Restart connector if needed
+# Restart Connector if needed
 sudo systemctl restart twingate-connector
 
 # Check system health
@@ -364,7 +368,7 @@ droplets = {
 # Check cloud-init completion and logs
 sudo tail -f /var/log/cloud-init-output.log
 
-# Monitor Twingate connector service
+# Monitor Twingate Connector service
 sudo systemctl status twingate-connector
 sudo journalctl -u twingate-connector -f --since "1 hour ago"
 
@@ -410,15 +414,15 @@ terraform refresh
    count = 2  # or more for load distribution
    ```
 
-3. **Monitor with Twingate Analytics**: Check connector load and distribute users
+3. **Monitor with Twingate Analytics**: Check Connector load and distribute users
 
 ### Emergency Procedures
 
 **If Connector Goes Offline:**
 
-1. Check Twingate Admin Console for connector status
+1. Check Twingate Admin Console for Connector status
 2. Access via DigitalOcean console (if SSH keys configured)
-3. Restart connector service: `sudo systemctl restart twingate-connector`
+3. Restart Connector service: `sudo systemctl restart twingate-connector`
 4. If persistent, recreate droplet: `terraform taint digitalocean_droplet.twingate_connectors["droplet-name"]`
 
 **Complete Recovery:**
@@ -476,8 +480,8 @@ terraform show
 - ✅ DigitalOcean droplets
 - ✅ DigitalOcean firewall rules
 - ✅ Twingate remote networks
-- ✅ Twingate connectors
-- ✅ Twingate connector tokens
+- ✅ Twingate Connectors
+- ✅ Twingate Connector tokens
 
 ## 🔒 Security Best Practices
 
@@ -539,8 +543,8 @@ export TF_VAR_tg_api_token="your_tg_token"
 **For Twingate Issues:**
 
 1. Check Twingate Admin Console logs
-2. Review connector service logs
-3. Contact Twingate support with connector IDs
+2. Review Connector service logs
+3. Contact Twingate support with Connector IDs
 
 ---
 
