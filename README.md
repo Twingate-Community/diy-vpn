@@ -190,7 +190,7 @@ Current as of October 2025. Refer to [DigitalOcean](https://docs.digitalocean.co
 
 Copyright (C) Twingate Inc.
 
-This project is licensed under the Server Side Public License v1 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under [AGPL-3.0-only](LICENSE).
 
 ---
 
