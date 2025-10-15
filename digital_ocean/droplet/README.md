@@ -60,6 +60,7 @@ Deploy cost-effective, globally distributed Twingate VPN Connectors across multi
 ### Required Credentials
 
 - **DigitalOcean API Token**: Generate from [DigitalOcean Control Panel](https://cloud.digitalocean.com/account/api/tokens)
+- **Twingate Account**: Admin access to create API tokens
 - **Twingate API Token**: Generate from Twingate Admin Console → Settings → API
 - **Twingate Network Name**: Your tenant name (e.g., `company.twingate.com` → `company`)
 

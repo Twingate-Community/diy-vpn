@@ -2,9 +2,11 @@
 
 A production-ready Helm chart for deploying Twingate to create Exit Networks in any Kubernetes cluster.
 
+> **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage through Twingate infrastructure is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
+
 ## 🏗️ Overview
 
-This Helm chart is designed as a standalone, reusable component that can be deployed to any Kubernetes cluster to create Twingate Exit Network. It leverages the official Twingate Kubernetes operator to manage connector lifecycle and provides enterprise-ready defaults.
+This Helm chart is designed as a standalone, reusable component that can be deployed to any Kubernetes cluster to create Twingate Exit Networks. It leverages the official Twingate Kubernetes operator to manage Connector lifecycle and provides enterprise-ready defaults.
 
 ```text
 ┌─────────────────────────────────┐
@@ -49,10 +51,11 @@ This Helm chart is designed as a standalone, reusable component that can be depl
 - **Kubernetes**: v1.19+ (tested up to v1.28)
 - **Helm**: v3.8+
 - **Network Access**: Cluster must reach Twingate cloud services (*.twingate.com)
+- **Twingate Home** or other subscription plan that includes Exit Networks (not available on Starter plan)
 
 ### Required Credentials
 
-- **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
+- **Twingate Account**: Admin access to create API tokens
 - **Twingate Network**: Your tenant name (e.g., `company.twingate.com` → `company`)
 - **Twingate API Key**: Generated from Admin Console → Settings → API
 - **Remote Network ID**: Created in Twingate Admin Console (or use existing)

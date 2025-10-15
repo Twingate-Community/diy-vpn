@@ -2,6 +2,8 @@
 
 Deploy enterprise-grade Twingate Exit Networks across multiple DigitalOcean Kubernetes clusters for auto-scaling, high availability, and advanced container orchestration. This solution provides maximum flexibility and scalability for large-scale VPN deployments.
 
+> **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage through Twingate infrastructure is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
+
 ## 🏗️ Architecture
 
 ```text
@@ -49,18 +51,19 @@ Deploy enterprise-grade Twingate Exit Networks across multiple DigitalOcean Kube
 - [doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/) (DigitalOcean CLI)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) >= 1.25
 - [helm](https://helm.sh/docs/intro/install/) >= 3.8
+- **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
 
 ### Required Credentials
 
 - **DigitalOcean API Token**: Generate from [DigitalOcean Control Panel](https://cloud.digitalocean.com/account/api/tokens)
-- **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
+- **Twingate Account**: Admin access to create API tokens
 - **Twingate API Token**: Generate from Twingate Admin Console → Settings → API
 - **Twingate Network Name**: Your tenant name (e.g., `company.twingate.com` → `company`)
 
 ### System Requirements
 
 - **Local Machine**: A machine with this repo cloned to it
-- **Network Access**: Ability to connect to Digital Ocean
+- **Network Access**: Ability to connect to DigitalOcean
 
 ## 🚀 Quick Start
 
@@ -111,7 +114,7 @@ The deployment process will:
 2. Deploy Kubernetes clusters in specified regions
 3. Configure kubectl for each cluster
 4. Deploy Twingate operator via Helm to each cluster
-5. Create TwingateConnector resources in each cluster
+5. Create Twingate Connectors in each cluster
 
 ### 3. Verify Deployment
 
