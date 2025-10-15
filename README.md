@@ -4,7 +4,7 @@ A comprehensive solution for deploying Twingate Exit Networks to create a DIY, g
 
 ## 🚀 Overview
 
-> **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
+> **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage through Twingate infrastructure is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
 
 This repository provides multiple deployment options for creating VPN Exit Networks with Twingate's zero-trust networking technology:
 
