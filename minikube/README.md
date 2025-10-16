@@ -2,6 +2,8 @@
 
 Deploy and test locally using Minikube for development, testing, learning, and prototyping. This provides a complete local environment for experimenting with Twingate's zero-trust networking before deploying to production.
 
+> **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage through Twingate infrastructure is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
+
 ## 🏗️ Overview
 
 ```text

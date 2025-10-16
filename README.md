@@ -1,22 +1,24 @@
 # DIY VPN - Twingate Exit Network Deployment
 
-A comprehensive solution for deploying Twingate Exit Networks to create a DIY, globally distributed VPN.
+A comprehensive solution for deploying Twingate Exit Networks to create a DIY, globally-distributed VPN for personal use.
 
 ## 🚀 Overview
 
-This repository provides multiple deployment options for creating VPN exit networks with Twingate's zero-trust networking technology:
+> **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage through Twingate infrastructure is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
+
+This repository provides multiple deployment options for creating VPN Exit Networks with Twingate's zero-trust networking technology:
 
 - **🧪 Minikube**: Local development and testing environment
 - **🌊 DigitalOcean Droplets**: Small scale deployments
 - **☸️ DigitalOcean Kubernetes**: Enterprise level implementation
 
-> **⚠️ Important**: To access Exit Networks, you need **Twingate Home** or a higher subscription plan. Exit Networks are not available on the free Starter plan. [Learn more about Twingate plans](https://www.twingate.com/pricing).
+> **⚠️ Important**: To access Exit Networks, you need a plan that includes Exit Networks, such as **Twingate Home** or **Twingate Enterprise**. Exit Networks are not available on the free Starter plan. [Learn more about Twingate plans](https://www.twingate.com/pricing).
 
 ## ✨ Key Features
 
 ✅ **Multi-Platform Support**: Deploy on droplets, Kubernetes clusters, or locally  
-✅ **Zero-Trust Security**: No inbound ports open - all access via Twingate  
-✅ **Global Distribution**: Multi-region deployment capabilities  
+✅ **Zero-Trust Security**: No inbound ports open - all access is via Twingate  
+✅ **Global Distribution**: Multi-region deployment capabilities
 
 ## 🏗️ Architecture
 
@@ -42,7 +44,7 @@ This repository provides multiple deployment options for creating VPN exit netwo
 #### 🌊 **DigitalOcean Droplets** - Most Popular
 
 - **Perfect for**: Personal VPN, small teams, cost-conscious deployments
-- **Choose if**: You want simple, reliable, cost-effective exit networks
+- **Choose if**: You want simple, reliable, cost-effective Exit Networks
 - **Pros**: Lowest cost, simple architecture, production-ready
 - **Cons**: Manual scaling, requires some Linux knowledge for troubleshooting
 
@@ -69,7 +71,7 @@ This repository provides multiple deployment options for creating VPN exit netwo
 ### Prerequisites
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
-- **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
+- **Twingate Home** or other subscription plan that includes Exit Networks (not available on Starter plan)
 - Twingate account with API access
 - Platform-specific requirements (see individual folders)
 
@@ -158,6 +160,8 @@ diy-vpn/
 - **Europe**: AMS2, AMS3, LON1, FRA1
 - **Asia Pacific**: SGP1, BLR1, SYD1
 
+Current as of October 2025. Refer to [DigitalOcean](https://docs.digitalocean.com/platform/regional-availability/) for the most current list.
+
 ## 🛠️ Troubleshooting
 
 ### Common Issues
@@ -184,7 +188,9 @@ diy-vpn/
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Copyright (C) Twingate Inc.
+
+This project is licensed under [AGPL-3.0-only](LICENSE).
 
 ---
 
