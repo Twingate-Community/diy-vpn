@@ -20,10 +20,8 @@ twingate-operator:
   # For example, `namespaces: ["foo-*", "!*-test"]` is not the same as `namespaces: ["foo-*,!*-test"]`
   # `namespaces: ["foo-*", "!*-test"]` will evaluate each glob pattern independently and combine the results.
   twingateOperator:
-    {
-      network: "",
-      apiKey: "",
-      remoteNetworkId: "",
-      logFormat: "json",
-      logVerbosity: "debug",
-    }
+    network: ""
+    apiKey: ""
+    remoteNetworkId: "" # https://{network}.twingate.com/exit-networks/{remoteNetworkId}
+    logFormat: "json"
+    logVerbosity: "debug"
