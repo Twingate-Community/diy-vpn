@@ -56,7 +56,7 @@ Deploy and test locally using Minikube for development, testing, learning, and p
 - **Twingate Home** or higher subscription plan (Exit Networks not available on Starter plan)
 - **Twingate Account**: Admin access to create API tokens
 - **API Token**: Generated from Twingate Admin Console
-- **Remote Network**: Existing exit network or ability to create one
+- **Exit Network**: Existing Exit Network. To create one, take a look at [the official docs]("https://www.twingate.com/docs/exit-networks")
 
 ## 🚀 Quick Start
 
@@ -72,18 +72,18 @@ brew install minikube kubectl helm
 # Helm: https://helm.sh/docs/intro/install/
 ```
 
-### 2. Start Minikube
+### 2. Update Configuration
 
-```bash
-# Navigate to minikube directory
-cd diy-vpn/minikube
+Copy `values-example.yaml` to `values.yaml` and update it with your Twingate credentials:
 
-# Start Minikube with optimal settings
-minikube start --cpus=2 --memory=4096 --driver=docker
-
-# Verify cluster is running
-kubectl cluster-info
-minikube status
+```yaml
+twingate-operator:
+  twingateOperator:
+    network: "your-company"                          # https://{network}.twingate.com
+    apiKey: "your_twingate_api_key_here"             # https://{network}.twingate.com/settings/api
+    remoteNetworkId: ""                              # https://{network}.twingate.com/exit-networks/{remoteNetworkId}
+    logFormat: "json"
+    logVerbosity: "debug"                            # Helpful for local development
 ```
 
 ### 3. Automated Deployment (Recommended)
@@ -99,8 +99,7 @@ This script will:
 
 - ✅ Check prerequisites
 - ✅ Start Minikube if not running
-- ✅ Copy example values if needed
-- ✅ Prompt you to edit configuration
+- ✅ Check configuration
 - ✅ Deploy the Helm chart
 - ✅ Show deployment status
 
@@ -131,20 +130,6 @@ kubectl get twingateconnectors -n twingate
 ```
 
 ## 🔧 Configuration Guide
-
-### Basic Configuration
-
-Edit `values.yaml` with your Twingate credentials:
-
-```yaml
-twingate-operator:
-  twingateOperator:
-    network: "your-company"                          # https://{network}.twingate.com
-    apiKey: "your_twingate_api_key_here"             # https://{network}.twingate.com/settings/api
-    remoteNetworkId: ""                              # https://{network}.twingate.com/exit-networks/{remoteNetworkId}
-    logFormat: "json"
-    logVerbosity: "debug"                            # Helpful for local development
-```
 
 ### Resource-Optimized Configuration
 
@@ -207,7 +192,7 @@ helm upgrade diy-vpn-local ../helm \
 kubectl get pods -n twingate -w
 
 # 4. Check logs
-kubectl logs -f -l app.kubernetes.io/name=twingate-operator -n twingate
+kubectl logs -f -l app.kubernetes.io/name=twingate-operator -n twingate --max-log-requests=10
 ```
 
 ### Testing Different Configurations
@@ -240,7 +225,7 @@ kubectl get twingateconnectors -A
 kubectl get all -n twingate
 
 # Check specific resources
-kubectl get deployment,pod,twingateconnector -n twingate
+kubectl get deployments,pods,twingateconnectors -n twingate
 
 # Check node resources
 kubectl describe nodes
@@ -250,13 +235,13 @@ kubectl describe nodes
 
 ```bash
 # Operator deployment details
-kubectl describe deployment -n twingate
+kubectl describe deployment -l app.kubernetes.io/name=twingate-operator -n twingate
 
 # Pod details
-kubectl describe pods -n twingate
+kubectl describe pods -l app.kubernetes.io/name=twingate-operator -n twingate
 
 # Connector resource details
-kubectl describe twingateconnector -n twingate
+kubectl describe twingateconnectors -n twingate
 
 # Recent events
 kubectl get events -n twingate --sort-by=.metadata.creationTimestamp
@@ -266,13 +251,19 @@ kubectl get events -n twingate --sort-by=.metadata.creationTimestamp
 
 ```bash
 # Real-time operator logs
-kubectl logs -f -l app.kubernetes.io/name=twingate-operator -n twingate
+kubectl logs -f -l app.kubernetes.io/name=twingate-operator -n twingate --max-log-requests=10
 
 # Historical logs with timestamps
-kubectl logs -l app.kubernetes.io/name=twingate-operator -n twingate --timestamps
+kubectl logs -l app.kubernetes.io/name=twingate-operator -n twingate --timestamps --max-log-requests=10
 
-# All container logs in namespace
-kubectl logs --all-containers=true -n twingate
+# All container logs in namespace (get pod names first, then logs)
+kubectl get pods -n twingate -o name | xargs -I {} kubectl logs {} -n twingate --all-containers=true
+
+# Alternative: Get logs from specific pod (replace <pod-name> with actual pod name)
+# kubectl logs <pod-name> -n twingate -f
+
+# Get logs from deployment
+kubectl logs deployment/twingate-operator -n twingate -f
 ```
 
 ### Performance Monitoring
@@ -297,7 +288,7 @@ kubectl describe nodes | grep -A 5 "Allocated resources"
 |-------|----------|----------|
 | **Minikube won't start** | Error during minikube start | `minikube delete && minikube start --driver=docker --force` |
 | **Insufficient resources** | Pods stuck in Pending | Increase Minikube resources or reduce pod resource requests |
-| **Operator CrashLoopBackOff** | Pod keeps restarting | Check API credentials, view logs with `kubectl logs` |
+| **Operator CrashLoopBackOff** | Pod keeps restarting | Check API credentials, view logs with `kubectl logs deployment/twingate-operator -n twingate` |
 | **Connector not appearing** | No connector in Twingate Console | Verify API token permissions, check remote network ID |
 | **DNS resolution issues** | Network timeouts | Check Minikube DNS: `minikube addons enable dns` |
 | **Image pull errors** | Can't download images | Check internet connection, try `minikube ssh docker pull <image>` |
