@@ -20,9 +20,6 @@ variable "clusters" {
     region     = string
     node_size  = optional(string, "s-1vcpu-2gb")
     node_count = optional(number, 1)
-    min_count  = optional(number, 1)
-    max_count  = optional(number, 3)
-    auto_scale = optional(bool, false)
   }))
   description = "Map of cluster configurations keyed by cluster name"
 }

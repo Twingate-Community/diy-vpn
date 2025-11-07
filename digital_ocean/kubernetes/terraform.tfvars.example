@@ -5,19 +5,15 @@ tg_network           = "tenant_name"
 # Define multiple clusters across different regions
 # Comment a cluster out to remove it
 clusters = {
-  // specific number of nodes example
   "tor-vpn-cluster" = {
     region     = "tor1"
     node_size  = "s-1vcpu-2gb"
-    node_count = 1 // Only use node_count for a specific number of nodes
+    node_count = 1
   }
-  // autoscale example
   "nyc-vpn-cluster" = {
     region     = "nyc1"
-    node_size  = "s-1vcpu-2gb"
-    min_count  = 1 // Only use min/max_count with auto_scale
-    max_count  = 6
-    auto_scale = true
+    node_size  = "s-2vcpu-4gb"
+    node_count = 2
   }
   "ams-vpn-cluster" = {
     region     = "ams3"

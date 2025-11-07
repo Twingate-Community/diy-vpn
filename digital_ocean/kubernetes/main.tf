@@ -19,8 +19,5 @@ resource "digitalocean_kubernetes_cluster" "clusters" {
     name       = "${each.key}-connector-pool"
     size       = each.value.node_size
     node_count = each.value.node_count
-    auto_scale = each.value.auto_scale
-    min_nodes  = each.value.min_count
-    max_nodes  = each.value.max_count
   }
 }

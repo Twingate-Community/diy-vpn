@@ -28,7 +28,7 @@ This repository provides multiple deployment options for creating VPN Exit Netwo
 |----------|----------|------|
 | [Minikube](./minikube/) | Development, testing | 💰 Free |
 | [DigitalOcean Droplets](./digital_ocean/droplet/) | Personal, cost-effective | 💰 Low |
-| [DigitalOcean Kubernetes](./digital_ocean/kubernetes/) | Enterprise, auto-scaling | 💰💰 Medium |
+| [DigitalOcean Kubernetes](./digital_ocean/kubernetes/) | Enterprise, orchestration | 💰💰 Medium |
 
 > **💡 Choose One Option**: These are **separate, independent deployment methods** - not components that work together. Select the single option that best matches your specific needs and use case.
 
@@ -50,9 +50,9 @@ This repository provides multiple deployment options for creating VPN Exit Netwo
 
 #### ☸️ **DigitalOcean Kubernetes** - Enterprise Grade
 
-- **Perfect for**: Large organizations, auto-scaling requirements, complex deployments  
+- **Perfect for**: Large organizations, access to cluster resources, complex deployments  
 - **Choose if**: You need enterprise features and have Kubernetes expertise
-- **Pros**: Auto-scaling, high availability, advanced orchestration
+- **Pros**: Access to cluster resources, high availability, advanced orchestration
 - **Cons**: Higher cost, complexity, requires Kubernetes knowledge
 
 ### Architecture Model
@@ -82,7 +82,7 @@ This repository provides multiple deployment options for creating VPN Exit Netwo
 | **Best for Beginners** | **Best for Production** | **Best for Development** |
 |------------------------|-------------------------|-------------------------|
 | [DigitalOcean Droplets](./digital_ocean/droplet/) | [DigitalOcean Kubernetes](./digital_ocean/kubernetes/) | [Minikube](./minikube/) |
-| Simple, cost-effective | Auto-scaling, enterprise | Local testing |
+| Simple, cost-effective | Orchestration, enterprise | Local testing |
 
 > **Note**: These are independent deployment methods. Don't try to use multiple options together - pick the one that best matches your requirements.
 

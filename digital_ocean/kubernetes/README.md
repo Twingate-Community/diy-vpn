@@ -1,6 +1,6 @@
 # Multi-Cluster Twingate VPN on DigitalOcean Kubernetes
 
-Deploy enterprise-grade Twingate Exit Networks across multiple DigitalOcean Kubernetes clusters for auto-scaling, high availability, and advanced container orchestration. This solution provides maximum flexibility and scalability for large-scale VPN deployments.
+Deploy enterprise-grade Twingate Exit Networks across multiple DigitalOcean Kubernetes clusters for high availability and advanced container orchestration. This solution provides access to existing cluster resources and keeps your VPN infrastructure co-located with your applications.
 
 > **⚠️ Internal Use Only**: This project can only be used for personal or internal use. Please do not use this project or Twingate to offer a commercial VPN service. Also note that bandwidth usage through Twingate infrastructure is subject to Twingate's [Fair Use Policy](https://www.twingate.com/terms/sa).
 
@@ -19,7 +19,7 @@ Deploy enterprise-grade Twingate Exit Networks across multiple DigitalOcean Kube
 │ │  └─────────┘ └─────────┘    │ │    │ │  └─────────┘ └─────────┘    │ │    │ │  └─────────┘ └─────────┘    │ │
 │ └─────────────────────────────┘ │    │ └─────────────────────────────┘ │    │ └─────────────────────────────┘ │
 │                                 │    │                                 │    │                                 │
-│ Auto-Scaling: 1-3 nodes         │    │ Auto-Scaling: 1-3 nodes         │    │ Auto-Scaling: 1-3 nodes         │
+│ Cluster Nodes: 1-3 nodes        │    │ Cluster Nodes: 1-3 nodes        │    │ Cluster Nodes: 1-3 nodes        │
 └─────────────────────────────────┘    └─────────────────────────────────┘    └─────────────────────────────────┘
            │                                        │                                        │
            └────────────────────────────────────────┼────────────────────────────────────────┘
@@ -35,7 +35,7 @@ Deploy enterprise-grade Twingate Exit Networks across multiple DigitalOcean Kube
 ## ✨ Key Features
 
 ✅ **Enterprise-Grade**: Kubernetes operator with advanced orchestration capabilities  
-✅ **Auto-Scaling**: Dynamic node and pod scaling based on demand  
+✅ **Resource Access**: Access to existing cluster resources and services  
 ✅ **High Availability**: Multi-node clusters with pod distribution and anti-affinity  
 ✅ **Production Security**: Non-root containers, security contexts, and RBAC  
 ✅ **Observability**: Structured logging, metrics, and health checks  
