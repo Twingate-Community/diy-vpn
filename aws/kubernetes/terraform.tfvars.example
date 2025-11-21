@@ -1,0 +1,49 @@
+# AWS Credentials
+# For permanent IAM credentials, use Access Key ID (starts with AKIA) and Secret Access Key
+# For temporary credentials (AWS SSO), use Access Key ID (starts with ASIA), Secret, and Session Token
+aws_access_key    = "your_aws_access_key_here"     # AKIA... for permanent, ASIA... for temporary
+aws_secret_key    = "your_aws_secret_key_here"
+aws_session_token = ""                              # Required for temporary credentials (AWS SSO)
+aws_region        = "us-east-1"                     # Primary region for provider configuration
+
+# Twingate Configuration
+tg_api_token = "your_twingate_api_token_here"
+tg_network   = "tenant_name"
+
+# Define multiple EKS clusters across different AWS regions
+# Comment a cluster out to remove it
+clusters = {
+  "virginia-vpn-cluster" = {
+    region        = "us-east-1"
+    instance_type = "t3.medium"
+    node_count    = 2
+  }
+  "ohio-vpn-cluster" = {
+    region        = "us-east-2"
+    instance_type = "t3.medium"
+    node_count    = 2
+  }
+  "oregon-vpn-cluster" = {
+    region        = "us-west-2"
+    instance_type = "t3.medium"
+    node_count    = 2
+  }
+  "ireland-vpn-cluster" = {
+    region        = "eu-west-1"
+    instance_type = "t3.medium"
+    node_count    = 2
+  }
+  "frankfurt-vpn-cluster" = {
+    region        = "eu-central-1"
+    instance_type = "t3.medium"
+    node_count    = 2
+  }
+  "singapore-vpn-cluster" = {
+    region        = "ap-southeast-1"
+    instance_type = "t3.medium"
+    node_count    = 2
+  }
+}
+
+# Optional: Environment label
+environment = "production"
