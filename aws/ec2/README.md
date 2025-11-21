@@ -80,7 +80,7 @@ Deploy cost-effective, globally distributed Twingate VPN Connectors across multi
 ```bash
 # Clone the repository
 git clone https://github.com/Twingate-Community/diy-vpn.git
-cd diy-vpn/aws/droplet
+cd diy-vpn/aws/ec2
 
 # Copy the example configuration
 cp terraform.tfvars.example terraform.tfvars
