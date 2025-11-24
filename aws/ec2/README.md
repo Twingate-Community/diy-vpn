@@ -92,8 +92,8 @@ Edit `terraform.tfvars` with your credentials and desired instance configuration
 
 ```hcl
 # Required: AWS credentials
-aws_access_key = "AKIAIOSFODNN7EXAMPLE"
-aws_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+aws_access_key    = "your_aws_access_key_here"     # AKIA... for permanent, ASIA... for temporary
+aws_secret_key    = "your_aws_secret_key_here"
 aws_region     = "us-east-1"  # Primary region for provider
 
 # Required: Twingate credentials
@@ -219,19 +219,17 @@ Each instance entry in the `instances` map supports these parameters:
 
 ### Instance Sizes
 
-| Type | vCPUs | Memory | Network | Cost/Month* | Recommended For |
-|------|-------|--------|---------|-------------|-----------------|
-| `t3.micro` | 2 | 1GB | Up to 5 Gbps | ~$7.50 | **Recommended**: Most VPN traffic |
-| `t3.small` | 2 | 2GB | Up to 5 Gbps | ~$15 | High traffic or multiple users |
-| `t3.medium` | 2 | 4GB | Up to 5 Gbps | ~$30 | Very high traffic |
+| Type | vCPUs | Memory | Network | Recommended For |
+|------|-------|--------|---------|-----------------|
+| `t3.micro` | 2 | 1GB | Up to 5 Gbps | **Recommended**: Most VPN traffic |
+| `t3.small` | 2 | 2GB | Up to 5 Gbps | High traffic or multiple users |
+| `t3.medium` | 2 | 4GB | Up to 5 Gbps | Very high traffic |
 
 *Approximate costs, varies by region. Check [AWS EC2 Pricing](https://aws.amazon.com/ec2/pricing/) for current rates.
 
 > **💡 Cost Tip**: Start with `t3.micro` - it handles most VPN workloads efficiently. T3 instances use burstable CPU credits.
 
-### Ubuntu 24.04 LTS AMI IDs by Region
-
-| Region | AMI ID | 
+| Region | AMI ID |
 |--------|--------|
 | us-east-1 | ami-0c02fb55b34e3a85c |
 | us-east-2 | ami-0a0e5d9c7acc336f1 |
@@ -312,25 +310,13 @@ terraform output twingate_remote_networks
 terraform output vpc_info
 ```
 
-**Via Twingate Admin Console:**
-
-1. Navigate to "Networks" → Check Connector status (should be green/online)
-2. Navigate to "Analytics" → Monitor Connector traffic and health
-3. Check Connector labels for deployment metadata
-
-**Via AWS Console:**
-
-1. EC2 → Instances → View instance status and resource usage
-2. VPC → Security Groups → Verify security group rules
-3. Systems Manager → Session Manager for emergency console access
-
 ### Service Management
 
 Access instances via Twingate network, AWS Systems Manager, or EC2 console:
 
 ```bash
 # Connect via AWS Systems Manager Session Manager (no SSH key needed)
-aws ssm start-session --target i-1234567890abcdef0
+aws ssm start-session --target {target_id}
 
 # Once connected, check Connector service status
 systemctl status twingate-connector
@@ -485,8 +471,6 @@ aws cloudwatch get-metric-statistics --namespace AWS/EC2 \
 
 3. **Monitor with CloudWatch**: Set up CloudWatch alarms for CPU, memory, and network
 
-4. **Enable Enhanced Monitoring**: For detailed metrics
-
 ### Emergency Procedures
 
 **If Connector Goes Offline:**
@@ -548,137 +532,20 @@ terraform destroy
 terraform show
 ```
 
-**Resources Removed:**
-
-- ✅ EC2 instances
-- ✅ VPCs, subnets, and internet gateways
-- ✅ Security groups
-- ✅ Route tables and associations
-- ✅ Twingate remote networks
-- ✅ Twingate Connectors
-- ✅ Twingate Connector tokens
-
-## 🔒 Security Best Practices
-
-### Production Security Checklist
-
-- [ ] **No SSH Keys**: Use `ssh_key_name = ""` for maximum security
-- [ ] **Use IAM Roles**: Consider using IAM instance roles instead of access keys
-- [ ] **Token Rotation**: Regularly rotate Twingate and AWS API tokens
-- [ ] **State File Security**: Secure Terraform state file (contains sensitive tokens)
-- [ ] **Network Monitoring**: Monitor Twingate Analytics for unusual activity
-- [ ] **CloudWatch Alarms**: Set up alarms for instance health and performance
-- [ ] **Update Management**: Verify automatic updates are working
-- [ ] **Backup Strategy**: Document recovery procedures
-- [ ] **VPC Flow Logs**: Enable for security monitoring (optional)
-- [ ] **AWS Organizations**: Use AWS Organizations for multi-account management
-
-### Advanced Security Configuration
-
-**State File Encryption:**
-
-```hcl
-terraform {
-  backend "s3" {
-    bucket         = "your-terraform-state"
-    key            = "twingate-vpn/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "terraform-state-lock"
-  }
-}
-```
-
-**Token Management:**
-
-```bash
-# Use environment variables instead of tfvars for CI/CD
-export TF_VAR_aws_access_key="your_access_key"
-export TF_VAR_aws_secret_key="your_secret_key"
-export TF_VAR_tg_api_token="your_tg_token"
-```
-
-**IAM Policy for Terraform (Least Privilege):**
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:*",
-        "vpc:*"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": ["us-east-1", "us-west-2", "eu-west-1"]
-        }
-      }
-    }
-  ]
-}
-```
-
-## 💰 Cost Optimization
-
-### Estimated Monthly Costs
-
-| Configuration | Instances | Cost/Month* |
-|--------------|-----------|-------------|
-| **Minimal** | 3 t3.micro (3 regions) | ~$22.50 |
-| **Standard** | 6 t3.micro (6 regions) | ~$45 |
-| **High Availability** | 10 t3.micro (5 regions × 2) | ~$75 |
-| **Enterprise** | 15 t3.small (5 regions × 3) | ~$225 |
-
-*Approximate costs for US regions. Add data transfer costs (~$0.09/GB out).
-
-### Cost Reduction Tips
-
-1. **Use Savings Plans**: AWS Compute Savings Plans can save up to 72%
-2. **Reserved Instances**: For long-term deployments (1-3 years)
-3. **Spot Instances**: Not recommended for VPN (may be terminated)
-4. **Right-Sizing**: Start with t3.micro and scale only if needed
-5. **Regional Selection**: Some regions are cheaper (us-east-1, us-west-2)
-6. **Data Transfer**: Keep connectors close to users to minimize data transfer
-7. **CloudWatch**: Use only essential metrics to reduce monitoring costs
-
 ## 📞 Support & Resources
 
 ### Documentation Links
 
-- 📖 [Twingate Connector Documentation](https://docs.twingate.com/docs/connector-deployment-guides)
+- 📖 [Twingate Connector Documentation](https://www.twingate.com/docs/connectors)
 - ☁️ [AWS EC2 Documentation](https://docs.aws.amazon.com/ec2/)
 - 🏗️ [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - 💰 [AWS Pricing Calculator](https://calculator.aws/)
 
 ### Community Support
 
-- 💬 [Twingate Community Forum](https://community.twingate.com/)
 - 🐛 [Report Issues](https://github.com/Twingate-Community/diy-vpn/issues)
-- 📧 [Twingate Support](https://www.twingate.com/support)
+- 📧 [Reddit](https://www.reddit.com/r/twingate)
 - 🎓 [AWS Support](https://aws.amazon.com/support/)
-
-### Getting Help
-
-**For Infrastructure Issues:**
-
-1. Check troubleshooting section above
-2. Review Terraform logs: `terraform apply -auto-approve -no-color 2>&1 | tee terraform.log`
-3. Post logs in GitHub issues (remove sensitive tokens)
-
-**For Twingate Issues:**
-
-1. Check Twingate Admin Console logs
-2. Review Connector service logs
-3. Contact Twingate support with Connector IDs
-
-**For AWS Issues:**
-
-1. Check AWS CloudWatch logs
-2. Review EC2 instance system logs
-3. Contact AWS support or post in AWS forums
 
 ---
 
