@@ -87,8 +87,8 @@ Edit `terraform.tfvars` to include your credentials and desired cluster configur
 
 ```hcl
 # Required: AWS credentials
-aws_access_key = "AKIAIOSFODNN7EXAMPLE"  # Or ASIA... for temporary credentials
-aws_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+aws_access_key = "your_aws_access_key_here"     # AKIA... for permanent, ASIA... for temporary
+aws_secret_key = "your_aws_secret_key_here"
 aws_session_token = ""  # Required only for temporary credentials (AWS SSO, assumed roles)
 
 # Required: Twingate credentials
@@ -203,13 +203,13 @@ You can deploy EKS clusters to any AWS region. Common choices:
 
 ### Instance Types
 
-| Type | vCPUs | Memory | Cost/Month* | Recommended For |
-|------|-------|--------|-------------|------------------|
-| `t3.small` | 2 | 2GB | ~$15 | Light traffic |
-| `t3.medium` | 2 | 4GB | ~$30 | **Recommended**: Most workloads |
-| `t3.large` | 2 | 8GB | ~$60 | High traffic |
+| Type | vCPUs | Memory | Recommended For |
+|------|-------|--------|------------------|
+| `t3.small` | 2 | 2GB | Light traffic |
+| `t3.medium` | 2 | 4GB | **Recommended**: Most workloads |
+| `t3.large` | 2 | 8GB | High traffic |
 
-*Approximate costs, varies by region. Check [AWS EC2 Pricing](https://aws.amazon.com/ec2/pricing/) for current rates.
+*Check [AWS EC2 Pricing](https://aws.amazon.com/ec2/pricing/) for instance pricing.
 
 ## Adding a New Cluster
 
