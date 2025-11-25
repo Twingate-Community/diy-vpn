@@ -1,0 +1,71 @@
+# AWS Credentials
+# For permanent IAM credentials, use Access Key ID (starts with AKIA) and Secret Access Key
+# For temporary credentials (AWS SSO), use Access Key ID (starts with ASIA), Secret, and Session Token
+aws_access_key    = "your_aws_access_key_here"     # AKIA... for permanent, ASIA... for temporary
+aws_secret_key    = "your_aws_secret_key_here"
+aws_session_token = ""                              # Required for temporary credentials (AWS SSO)
+aws_region        = "us-east-1"                     # Primary region for provider configuration
+
+# Twingate Configuration
+tg_api_token = "your_twingate_api_token_here"
+tg_network   = "your_twingate_network_name"
+
+# Define EC2 instances across different regions
+# Each instance configuration supports multiple instances per region
+instances = {
+  "virginia-vpn" = {
+    region        = "us-east-1"
+    instance_type = "t3.micro"
+    count         = 1
+    ami           = "ami-0c02fb55b34e3a85c"  # Ubuntu 24.04 LTS
+  }
+  "ohio-vpn" = {
+    region        = "us-east-2" 
+    instance_type = "t3.micro"
+    count         = 1
+    ami           = "ami-0a0e5d9c7acc336f1"  # Ubuntu 24.04 LTS
+  }
+  "california-vpn" = {
+    region        = "us-west-1"
+    instance_type = "t3.micro"
+    count         = 1
+    ami           = "ami-0ec14a68621e2d49e"  # Ubuntu 24.04 LTS
+  }
+  "oregon-vpn" = {
+    region        = "us-west-2"
+    instance_type = "t3.micro"
+    count         = 2  # Multiple instances in this region
+    ami           = "ami-05134c8ef96964280"  # Ubuntu 24.04 LTS
+  }
+  "ireland-vpn" = {
+    region        = "eu-west-1"
+    instance_type = "t3.micro"
+    count         = 1
+    ami           = "ami-0c38b837cd80f13bb"  # Ubuntu 24.04 LTS
+  }
+  "frankfurt-vpn" = {
+    region        = "eu-central-1"
+    instance_type = "t3.micro"
+    count         = 1
+    ami           = "ami-0a628e1e89aaedf80"  # Ubuntu 24.04 LTS
+  }
+  "singapore-vpn" = {
+    region        = "ap-southeast-1"
+    instance_type = "t3.micro"
+    count         = 1
+    ami           = "ami-060e277c0d4cce553"  # Ubuntu 24.04 LTS
+  }
+  "tokyo-vpn" = {
+    region        = "ap-northeast-1"
+    instance_type = "t3.micro"
+    count         = 1
+    ami           = "ami-0f2dd5fc989207c82"  # Ubuntu 24.04 LTS
+  }
+}
+
+# Optional: SSH key pair name for EC2 instance access (for debugging/maintenance)
+# Leave empty string for maximum security (no SSH access)
+ssh_key_name = ""  # "your-ec2-key-pair-name"
+
+# Optional: Environment label
+environment = "production"
