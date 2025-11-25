@@ -42,6 +42,7 @@ variable "instances" {
     instance_type = optional(string, "t3.micro")
     count         = optional(number, 1)
     ami           = optional(string, "ami-0ecb62995f68bb549") # Ubuntu 24.04 LTS in us-east-1
+    cidr_block    = optional(string, "10.0.1.0/24")
   }))
   description = "Map of EC2 instance configurations per region"
 

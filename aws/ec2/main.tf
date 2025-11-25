@@ -1,23 +1,3 @@
-# Create locals for EC2 instances
-locals {
-  # Flatten the instances configuration to create individual instances
-  ec2_instances = merge([
-    for instance_name, config in var.instances : {
-      for i in range(config.count) :
-      config.count == 1 ? "${config.region}-vpn" : "${config.region}-vpn-${format("%02d", i + 1)}" => {
-        instance_name = instance_name
-        region        = config.region
-        instance_type = config.instance_type
-        ami           = config.ami
-        index         = i + 1
-      }
-    }
-  ]...)
-
-  # Get unique regions for creating exit networks
-  unique_regions = toset([for config in var.instances : config.region])
-}
-
 # Create an exit network for each region
 resource "twingate_remote_network" "vpn_networks" {
   for_each = local.unique_regions
@@ -83,7 +63,7 @@ resource "aws_subnet" "twingate_subnets" {
 
   provider                = aws
   vpc_id                  = aws_vpc.twingate_vpcs[each.value].id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = local.region_configs[each.value].cidr_block
   map_public_ip_on_launch = true
   availability_zone       = data.aws_availability_zones.available[each.value].names[0]
 
@@ -164,7 +144,7 @@ resource "aws_instance" "twingate_connectors" {
   ami           = each.value.ami
   instance_type = each.value.instance_type
   subnet_id     = aws_subnet.twingate_subnets[each.value.region].id
-  
+
   vpc_security_group_ids = [
     aws_security_group.twingate_sg[each.value.region].id
   ]
@@ -197,4 +177,12 @@ resource "aws_instance" "twingate_connectors" {
     aws_internet_gateway.twingate_igws,
     aws_route_table_association.twingate_rta
   ]
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      ami,
+      user_data,
+    ]
+  }
 }
