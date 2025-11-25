@@ -3,16 +3,16 @@ output "instances" {
   description = "Information about all created EC2 instances"
   value = {
     for name, instance in aws_instance.twingate_connectors : name => {
-      id                 = instance.id
-      name               = name
-      region             = instance.availability_zone
-      instance_type      = instance.instance_type
-      public_ip          = instance.public_ip
-      private_ip         = instance.private_ip
-      state              = instance.instance_state
-      vpc_id             = instance.vpc_security_group_ids
-      subnet_id          = instance.subnet_id
-      tags               = instance.tags
+      id            = instance.id
+      name          = name
+      region        = instance.availability_zone
+      instance_type = instance.instance_type
+      public_ip     = instance.public_ip
+      private_ip    = instance.private_ip
+      state         = instance.instance_state
+      vpc_id        = instance.vpc_security_group_ids
+      subnet_id     = instance.subnet_id
+      tags          = instance.tags
     }
   }
 }
